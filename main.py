@@ -1,14 +1,11 @@
 from telethon import TelegramClient
-import os, json, requests
+import os, json
 
 api_id = int(os.getenv("API_ID"))
 api_hash = os.getenv("API_HASH")
 
 SOURCE = os.getenv("SOURCE_CHANNEL")
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-
-# 👇 多目标频道（重点）
-TARGET_CHANNELS = os.getenv("TARGET_CHANNELS").split(",")
+TARGETS = os.getenv("TARGET_CHANNELS").split(",")
 
 DB = "last_id.json"
 
@@ -25,24 +22,6 @@ def save_last(mid):
     json.dump({"last_id": mid}, open(DB, "w"))
 
 
-def send(text=None, file=None):
-    for target in TARGET_CHANNELS:
-
-        if file:
-            url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument"
-            requests.post(
-                url,
-                data={"chat_id": target},
-                files={"document": open(file, "rb")}
-            )
-        else:
-            url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-            requests.post(
-                url,
-                data={"chat_id": target, "text": text}
-            )
-
-
 async def main():
     await client.start()
 
@@ -55,17 +34,15 @@ async def main():
         if m.id > last_id:
 
             try:
-                if m.media:
-                    file = await m.download_media()
-                    send(file=file)
-                else:
-                    send(text=m.text)
+                # 🔥 核心：直接复制消息（不会崩）
+                for t in TARGETS:
+                    await client.forward_messages(t, m)
 
                 last_id = m.id
-                print("发送:", m.id)
+                print("转发:", m.id)
 
             except Exception as e:
-                print("错误:", e)
+                print("失败:", e)
 
     save_last(last_id)
 
