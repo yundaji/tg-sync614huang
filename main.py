@@ -1,14 +1,14 @@
 from telethon import TelegramClient
 import os, json, requests
 
-api_id = int(os.getenv("37199356"))
-api_hash = os.getenv("d9156458a8520ad1d227f14c43ee19e7")
+api_id = int(os.getenv("API_ID"))
+api_hash = os.getenv("API_HASH")
 
-SOURCE = os.getenv("@madou_7777")
-BOT_TOKEN = os.getenv("8970432708:AAHbdyqeDCM57p9ljmkzyYa0DBaIiyTyqR4")
+SOURCE = os.getenv("SOURCE_CHANNEL")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 # 👇 多目标频道（重点）
-TARGET_CHANNELS = os.getenv("@sanji912,@sanji255").split(",")
+TARGET_CHANNELS = os.getenv("TARGET_CHANNELS").split(",")
 
 DB = "last_id.json"
 
